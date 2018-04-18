@@ -61,27 +61,27 @@ public class SearchItem extends HttpServlet {
 		// out.println("<h1>This is a HTML page</h1>");
 		// out.println("</body></html>");
 		// out.close();
-		
-		//example3: return json object 
-//		response.setContentType("application/json");
-//		response.addHeader("Access-Control-Allow-Origin", "*");
+
+		// example3: return json object
+		// response.setContentType("application/json");
+		// response.addHeader("Access-Control-Allow-Origin", "*");
 		double lat = Double.parseDouble(request.getParameter("lat"));
 		double lon = Double.parseDouble(request.getParameter("lon"));
-        
-//		String username = "";
-//		if (request.getParameter("username") != null) {
-//			username = request.getParameter("username");
-//		}
-//		JSONObject obj = new JSONObject();
-//		try {
-//			obj.put("username", username);
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//		}
-//		PrintWriter out = response.getWriter();
-//		out.print(obj);
-//		out.close();
-	
+
+		// String username = "";
+		// if (request.getParameter("username") != null) {
+		// username = request.getParameter("username");
+		// }
+		// JSONObject obj = new JSONObject();
+		// try {
+		// obj.put("username", username);
+		// } catch (JSONException e) {
+		// e.printStackTrace();
+		// }
+		// PrintWriter out = response.getWriter();
+		// out.print(obj);
+		// out.close();
+
 		// term can be empty or null.
 		String term = request.getParameter("term");
 		TicketMasterAPI tmAPI = new TicketMasterAPI();
@@ -97,8 +97,6 @@ public class SearchItem extends HttpServlet {
 			e.printStackTrace();
 		}
 		RpcHelper.writeJsonArray(response, array);
-
-
 
 	}
 
