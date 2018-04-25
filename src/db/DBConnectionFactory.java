@@ -1,14 +1,16 @@
 package db;
 
+import db.mysql.MySQLConnection;
+
 //factory design pattern to enable multiple DB in the future 
 public class DBConnectionFactory {
 	// This should change based on the pipeline.
-	private static final String DEFAULT_DB = "bigtable";
+	private static final String DEFAULT_DB = "mysql";
 
 	public static DBConnection getConnection(String db) throws IllegalArgumentException {
 		switch (db) {
 		case "mysql":
-			return null; // new MySQLConnection()
+			return new MySQLConnection();
 		case "mongodb":
 			return null; // new MongoDBConnection()
 		default:

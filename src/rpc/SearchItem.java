@@ -2,12 +2,15 @@ package rpc;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import db.DBConnection;
+import db.DBConnectionFactory;
 import entity.Item;
 import external.TicketMasterAPI;
 
@@ -83,13 +86,15 @@ public class SearchItem extends HttpServlet {
 		// out.close();
 
 		// term can be empty or null.
-		String term = request.getParameter("term");
-		TicketMasterAPI tmAPI = new TicketMasterAPI();
-		List<Item> items = tmAPI.search(lat, lon, term);
-		JSONArray array = new JSONArray();
+		String keyword = request.getParameter("term");
+		
+		DBConnection connection = DBConnectionFactory.getConnection();
+		List<Item> items = connection.searchItems(lat, lon, keyword);
+        connection.close(); 
+
+        JSONArray array = new JSONArray();
 		try {
 			for (Item item : items) {
-				// Add a thin version of item object
 				JSONObject obj = item.toJSONObject();
 				array.put(obj);
 			}
@@ -97,6 +102,7 @@ public class SearchItem extends HttpServlet {
 			e.printStackTrace();
 		}
 		RpcHelper.writeJsonArray(response, array);
+
 
 	}
 
