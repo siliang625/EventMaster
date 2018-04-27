@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -68,6 +69,7 @@ public class SearchItem extends HttpServlet {
 		// example3: return json object
 		// response.setContentType("application/json");
 		// response.addHeader("Access-Control-Allow-Origin", "*");
+		String userId = request.getParameter("user_id");
 		double lat = Double.parseDouble(request.getParameter("lat"));
 		double lon = Double.parseDouble(request.getParameter("lon"));
 
@@ -85,24 +87,26 @@ public class SearchItem extends HttpServlet {
 		// out.print(obj);
 		// out.close();
 
-		// term can be empty or null.
+		// Term can be empty or null.
 		String keyword = request.getParameter("term");
-		
-		DBConnection connection = DBConnectionFactory.getConnection();
-		List<Item> items = connection.searchItems(lat, lon, keyword);
-        connection.close(); 
 
-        JSONArray array = new JSONArray();
+		DBConnection conn = DBConnectionFactory.getConnection();
+		List<Item> items = conn.searchItems(lat, lon, keyword);
+
+		Set<String> favorite = conn.getFavoriteItemIds(userId);
+		conn.close();
+		JSONArray array = new JSONArray();
+
 		try {
 			for (Item item : items) {
 				JSONObject obj = item.toJSONObject();
+				obj.put("favorite", favorite.contains(item.getItemId()));
 				array.put(obj);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		RpcHelper.writeJsonArray(response, array);
-
 
 	}
 

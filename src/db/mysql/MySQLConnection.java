@@ -124,11 +124,11 @@ public class MySQLConnection implements DBConnection {
 				ResultSet rs = statement.executeQuery();
 
 				// item_id, name, rating, url, image_url , ...., distance
+				//
 				// abcd abcd 1 xx xxx 5
 				// 1234 1234 2 yy yyy 5 <-
 
 				ItemBuilder builder = new ItemBuilder();
-				//only return 1 object, therefore, could use if(rs.next()) as well 
 				while (rs.next()) {
 					builder.setItemId(rs.getString("item_id"));
 					builder.setName(rs.getString("name"));
@@ -152,22 +152,20 @@ public class MySQLConnection implements DBConnection {
 	@Override
 	public Set<String> getCategories(String itemId) {
 		// TODO Auto-generated method stub
-		Set<String> categories = new HashSet<>();
 		if (conn == null) {
-			return categories;
+			return null;
 		}
-		String sql = "SELECT category FROM categories WHERE itemId = ?";
+		Set<String> categories = new HashSet<>();
 		try {
+			String sql = "SELECT category from categories WHERE item_id = ? ";
 			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setString(1, itemId);
-			// [{"category":"sports"}, {...}]
 			ResultSet rs = statement.executeQuery();
 			while (rs.next()) {
 				categories.add(rs.getString("category"));
 			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
 		}
 		return categories;
 

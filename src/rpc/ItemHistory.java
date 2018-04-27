@@ -41,24 +41,23 @@ public class ItemHistory extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
+
 		String userId = request.getParameter("user_id");
+		JSONArray array = new JSONArray();
 
 		DBConnection conn = DBConnectionFactory.getConnection();
 		Set<Item> items = conn.getFavoriteItems(userId);
-		conn.close();
-
-		JSONArray array = new JSONArray();
 		for (Item item : items) {
-			JSONObject object = item.toJSONObject();
+			JSONObject obj = item.toJSONObject();
 			try {
-				//to show frontend page: true for a solid heart 
-				object.put("favorite", true);
+				obj.append("favorite", true);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-			array.put(object);
+			array.put(obj);
 		}
 		RpcHelper.writeJsonArray(response, array);
+
 
 	}
 
@@ -83,7 +82,7 @@ public class ItemHistory extends HttpServlet {
 			DBConnection conn = DBConnectionFactory.getConnection();
 			conn.setFavoriteItems(userId, itemIds);
 			conn.close();
-			RpcHelper.writeJsonObject(response, new JSONObject().put("result", "Success"));
+			RpcHelper.writeJsonObject(response, new JSONObject().put("result", "SUCCESS"));
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -97,20 +96,22 @@ public class ItemHistory extends HttpServlet {
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		// input format: {“user_id”: “1010”, “favorite”: [“abcd”, “efgh”]}
+		JSONObject input = RpcHelper.readJsonObject(request);
 		try {
-			JSONObject input = RpcHelper.readJsonObject(request);
 			String userId = input.getString("user_id");
-			JSONArray array = input.getJSONArray("favorite");
+			JSONArray favorite = input.getJSONArray("favorite");
+
 			List<String> itemIds = new ArrayList<>();
-			for (int i = 0; i < array.length(); ++i) {
-				itemIds.add(array.get(i).toString());
+			for (int i = 0; i < favorite.length(); ++i) {
+				itemIds.add(favorite.getString(i));
 			}
 
 			DBConnection conn = DBConnectionFactory.getConnection();
 			conn.unsetFavoriteItems(userId, itemIds);
 			conn.close();
 
-			RpcHelper.writeJsonObject(response, new JSONObject().put("result", "Success"));
+			RpcHelper.writeJsonObject(response, new JSONObject().put("result", "SUCCESS"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
